@@ -21,9 +21,9 @@ jobs:
       - uses: mr-smithers-excellent/docker-build-push@v5
         name: Build & push Docker image
         with:
-          image: ${{ secrets.IMAGE_NAME_PROD }}
+          image: buzzy-prod/iap-microservice
           tags: latest, $GITHUB_SHA
-          registry: ${{ secrets.DOCKER_REGISTRY_PROD }}
+          registry: gcr.io
           dockerfile: Dockerfile
           username: _json_key
           password: ${{ secrets.GCP_SA_JSON_PROD }}
@@ -31,6 +31,6 @@ jobs:
         name: Update Cloud Run service
         with:
           credentials: ${{ secrets.GCP_SA_JSON_PROD }}
-          image: ${{ secrets.DOCKER_REGISTRY_PROD }}/${{ secrets.GCP_SA_JSON_PROD }}:${{ github.sha }}
-          service: ${{ secrets.CLOUD_RUN_SERVICE_PROD }}
-          region: ${{ secrets.CLOUD_RUN_REGION_PROD }}
+          image: gcr.io/buzzy-prod/iap-microservice:${{ github.sha }}
+          service: buzzy-iap-prod
+          region: us-central1
