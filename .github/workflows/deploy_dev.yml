@@ -3,6 +3,7 @@ on:
   push:
     branches:
       - master
+      - actions-test
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -15,15 +16,20 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     needs: test
+    env:
+      IMAGE_NAME: ${{ secrets.IMAGE_NAME }}
+      DOCKER_REGISTRY: ${{ secrets.DOCKER_REGISTRY_DEV }}
+      CLOUD_RUN_SERVICE: ${{ secrets.CLOUD_RUN_SERVICE_DEV }}
+      CLOUD_RUN_REGION: ${{ secrets.CLOUD_RUN_REGION_DEV }}
     steps:
       - uses: actions/checkout@v2
         name: Check out code
       - uses: mr-smithers-excellent/docker-build-push@v5
         name: Build & push Docker image
         with:
-          image: ${{ secrets.IMAGE_NAME_DEV }}
+          image: ${{ env.IMAGE_NAME }}
           tags: latest, $GITHUB_SHA
-          registry: ${{ secrets.DOCKER_REGISTRY_DEV }}
+          registry: ${{ env.DOCKER_REGISTRY_DEV }}
           dockerfile: Dockerfile
           username: _json_key
           password: ${{ secrets.GCP_SA_JSON_DEV }}
@@ -31,6 +37,6 @@ jobs:
         name: Update Cloud Run service
         with:
           credentials: ${{ secrets.GCP_SA_JSON_DEV }}
-          image: ${{ secrets.DOCKER_REGISTRY_DEV }}/${{ secrets.GCP_SA_JSON_DEV }}:${{ github.sha }}
-          service: ${{ secrets.CLOUD_RUN_SERVICE_DEV }}
-          region: ${{ secrets.CLOUD_RUN_REGION_DEV }}
+          image: ${{ env.DOCKER_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
+          service: ${{ env.CLOUD_RUN_SERVICE }}
+          region: ${{ env.CLOUD_RUN_REGION }}

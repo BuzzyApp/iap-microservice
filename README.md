@@ -1,6 +1,6 @@
 # IAP Microservice
 
-A microservice for processing and managing Apple and iOS In App Payments and Subscriptions.
+A microservice for processing and managing Android and iOS In App Payments and Subscriptions.
 
 The microservice is designed to be the source-of-truth for your payments and subscriptions for your app.
 It will keep track of customers, payments, and most importantly subscriptions and their statuses/states.
